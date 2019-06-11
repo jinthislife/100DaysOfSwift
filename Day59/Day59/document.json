@@ -1,0 +1,49 @@
+{
+    "result" : [
+      { "name" : "estonia",
+      "location" : "Europe",
+      "capital" : "Tallinn",
+      "population" : "1,323,824",
+      "callingCode" : "+372",
+      "ethnicGroups" : [ "68.7% Estonians", "24.9% Russians" , "1.8% Ukrainians", "0.9% Belarusians", "0.6% Finns", "3.1% Others" ]
+      },
+      {
+          "name" : "france"
+      },
+      {
+          "name" : "germany"
+      },
+      {
+          "name" : "ireland"
+      },
+      {
+          "name" : "italy"
+      },
+      {
+          "name" : "monaco"
+      },
+      {
+          "name" : "nigeria"
+      },
+      {
+          "name" : "poland"
+      },
+      {
+          "name" : "russia"
+      },
+      {
+          "name" : "spain"
+      },
+      {
+          "name" : "uk",
+          "location" : "Europe",
+          "capital" : "London",
+          "population" : "66,040,229",
+          "callingCode" : "+44",
+          "ethnicGroups" : [ "87.1% White", "7.0% Asian", "3.0% Black", "2.0% Mixed", "0.9% others" ]
+      },
+      {
+          "name" : "us"
+      }
+    ]
+}
