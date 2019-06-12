@@ -29,13 +29,17 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
             }
         }
     }
-    
-    @objc func scheduleLocal() {
-        registerCategory()
 
+    @objc func scheduleLocal() {
+        triggerLocal(timeInterval: 8)
+    }
+    
+    func triggerLocal(timeInterval: TimeInterval) {
+        registerCategory()
+        
         let center = UNUserNotificationCenter.current()
         center.removeAllPendingNotificationRequests()
-
+        
         let content = UNMutableNotificationContent()
         content.title = "Late wake up call"
         content.body = "The early bird catches the worm, but the second mouse gets the cheese"
@@ -46,9 +50,9 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         var dateComponents = DateComponents()
         dateComponents.hour = 10
         dateComponents.minute = 30
-
-//        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 8, repeats: false)
+        
+        //        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
         
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         
@@ -60,8 +64,9 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         center.delegate = self
 
         let show = UNNotificationAction(identifier: "show", title: "Tell me more...", options: .foreground)
+        let remind = UNNotificationAction(identifier: "remind", title: "Remind me later")
         
-        let category = UNNotificationCategory(identifier: "alarm", actions: [show], intentIdentifiers: [])
+        let category = UNNotificationCategory(identifier: "alarm", actions: [show, remind], intentIdentifiers: [])
         center.setNotificationCategories([category])
     }
     
@@ -72,15 +77,23 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
             print("Custom data received: \(customData)")
             switch response.actionIdentifier {
             case UNNotificationDefaultActionIdentifier:
-                print("Default Identifier")
+                showAlertController(msg: "Default Identifier")
             case "show":
-                print("Show more information...")
+                showAlertController(msg: "Show more information")
+            case "remind":
+                triggerLocal(timeInterval: 10)
             default:
                 break
             }
         }
         
         completionHandler()
+    }
+    
+    func showAlertController(msg: String) {
+        let ac = UIAlertController(title: "ActionIdentifier Message", message: msg, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .cancel))
+        present(ac, animated: true)
     }
 }
 
