@@ -20,7 +20,7 @@ class GameScene: SKScene {
     let leftEdge = -22
     let bottomEdge = -22
     let rightEdge = 1024 + 22
-    var gameLeftCount = 10
+    var gameLeftCount = 1
     var score = 0 {
         didSet {
             scoreLabel.text = "Score: \(score)"
@@ -171,8 +171,16 @@ class GameScene: SKScene {
             if nodesAtPoint.contains(restartLabel) {
                 gameoverLabel.removeFromParent()
                 restartLabel.removeFromParent()
-                gameLeftCount = 10
+                gameLeftCount = 1
                 gameTimer = Timer.scheduledTimer(timeInterval: 6, target: self, selector: #selector(launchFireworks), userInfo: nil, repeats: true)
+
+                let fadeOut = SKAction.fadeOut(withDuration: 1)
+                let fadeIn = SKAction.fadeIn(withDuration: 0)
+                let sequence = SKAction.sequence([fadeOut, fadeIn])
+//                let fadeOut = SKAction.fadeAlpha(by: -0.9, duration: 0)
+//                let fadeIn = SKAction.fadeAlpha(by: 1, duration: 1)
+                
+                self.scene?.run(sequence)
             }
         }
     }
