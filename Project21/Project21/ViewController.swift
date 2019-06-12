@@ -81,7 +81,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
             case "show":
                 showAlertController(msg: "Show more information")
             case "remind":
-                triggerLocal(timeInterval: 10)
+                triggerLocal(timeInterval: 86400)
             default:
                 break
             }
