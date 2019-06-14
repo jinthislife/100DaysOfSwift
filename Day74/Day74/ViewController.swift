@@ -97,7 +97,7 @@ class ViewController: UITableViewController, DetailViewControllerDelegate {
 
     @objc func createNote() {
         let note = Note()
-        notes.append(note)
+        notes.insert(note, at: 0)
         loadDetailView(note)
     }
 
