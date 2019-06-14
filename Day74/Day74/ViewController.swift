@@ -15,6 +15,14 @@ class ViewController: UITableViewController, DetailViewControllerDelegate {
     let bgColorTransparent = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 0.5)
     var notes = [Note]()
 
+    lazy var toolBarLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 60, height: 20))
+        label.font = UIFont.systemFont(ofSize: 11)
+        label.text = "No Notes"
+        label.textAlignment = .center
+        return label
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Notes"
@@ -30,8 +38,9 @@ class ViewController: UITableViewController, DetailViewControllerDelegate {
         navigationController?.isToolbarHidden = false
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let create = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(createNote))
+        let label = UIBarButtonItem(customView: toolBarLabel)
         create.tintColor = orange
-        toolbarItems = [space, create]
+        toolbarItems = [space, label, space, create]
         
         //set toolbar transpanrent
         navigationController?.toolbar.barTintColor = bgColorTransparent
@@ -83,6 +92,17 @@ class ViewController: UITableViewController, DetailViewControllerDelegate {
         loadDetailView(notes[indexPath.row])
     }
     
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            notes.remove(at: indexPath.row)
+            tableView.reloadData()
+            updateToolBarLabel()
+        }
+    }
     func loadDetailView(_ note: Note) {
         if let vc = storyboard?.instantiateViewController(withIdentifier: "detail") as? DetailViewController {
             vc.note = note
@@ -107,8 +127,10 @@ class ViewController: UITableViewController, DetailViewControllerDelegate {
             if let index = notes.firstIndex(where: { $0.uuid == note.uuid }) {
                 notes.remove(at: index)
             }
+            updateToolBarLabel()
             return
         }
+        updateToolBarLabel()
         saveNotes()
     }
 
@@ -120,6 +142,7 @@ class ViewController: UITableViewController, DetailViewControllerDelegate {
 
         do {
             notes = try JSONDecoder().decode([Note].self, from: data)
+            updateToolBarLabel()
         } catch {
             print("fail to decode")
         }
@@ -131,6 +154,10 @@ class ViewController: UITableViewController, DetailViewControllerDelegate {
         } else {
             print("fail to encode")
         }
+    }
+    
+    func updateToolBarLabel() {
+        toolBarLabel.text = "\(notes.count) Notes"
     }
 }
 
