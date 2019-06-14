@@ -12,7 +12,7 @@ protocol DetailViewControllerDelegate: AnyObject {
     func detailViewControllerDoneButtonTapped(_ viewController: DetailViewController)
 }
 
-class DetailViewController: UIViewController {
+class DetailViewController: UIViewController, UITextViewDelegate {
     let bgColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
     let orange = UIColor(red: 232/255, green: 162/255, blue: 0, alpha: 1)
     var note: Note = Note()
@@ -23,7 +23,7 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.largeTitleDisplayMode = .never
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(donePressed))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(sharePressed))
         
         navigationController?.isToolbarHidden = false
         let delete = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(trashPressed))
@@ -35,10 +35,15 @@ class DetailViewController: UIViewController {
         toolbarItems = [delete, space, compose]
         
         view.backgroundColor = bgColor
+        textView.delegate = self
         textView.backgroundColor = bgColor
         textView.text = note.detail
         textView.tintColor = orange
         textView.contentInset = UIEdgeInsets(top: 0, left: 17, bottom: view.safeAreaInsets.bottom, right: 15)
+        
+        if note.detail.isEmpty {
+            textView.becomeFirstResponder()
+        }
     }
     
     @objc func trashPressed() {
@@ -49,11 +54,20 @@ class DetailViewController: UIViewController {
         
     }
     
+    @objc func sharePressed() {
+        
+    }
+
     @objc func donePressed() {
         note.detail = textView.text
         delegate?.detailViewControllerDoneButtonTapped(self)
         navigationController?.popViewController(animated: true)
     }
     
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        let share = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(sharePressed))
+        let done = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(donePressed))
+        navigationItem.rightBarButtonItems = [share, done]
+    }
     
 }
