@@ -37,6 +37,8 @@ class DetailViewController: UIViewController {
         view.backgroundColor = bgColor
         textView.backgroundColor = bgColor
         textView.text = note.detail
+        textView.tintColor = orange
+        textView.contentInset = UIEdgeInsets(top: 0, left: 17, bottom: view.safeAreaInsets.bottom, right: 15)
     }
     
     @objc func trashPressed() {
