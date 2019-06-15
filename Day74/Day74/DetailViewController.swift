@@ -13,8 +13,7 @@ protocol DetailViewControllerDelegate: AnyObject {
 }
 
 class DetailViewController: UIViewController, UITextViewDelegate {
-    let bgColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
-    let orange = UIColor(red: 232/255, green: 162/255, blue: 0, alpha: 1)
+
     var note: Note = Note()
     weak var delegate: DetailViewControllerDelegate?
 
@@ -30,15 +29,15 @@ class DetailViewController: UIViewController, UITextViewDelegate {
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let compose = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(composePressed))
         
-        delete.tintColor = orange
-        compose.tintColor = orange
+        delete.tintColor = UIColor(named: "MyOrange")
+        compose.tintColor = UIColor(named: "MyOrange")
         toolbarItems = [delete, space, compose]
         
-        view.backgroundColor = bgColor
+        view.backgroundColor = UIColor(named: "BGColor")
         textView.delegate = self
-        textView.backgroundColor = bgColor
+        textView.backgroundColor = UIColor(named: "BGColor")
         textView.text = note.detail
-        textView.tintColor = orange
+        textView.tintColor = UIColor(named: "MyOrange")
         textView.contentInset = UIEdgeInsets(top: 0, left: 17, bottom: view.safeAreaInsets.bottom, right: 15)
         
         if note.detail.isEmpty {

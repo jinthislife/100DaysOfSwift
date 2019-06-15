@@ -10,9 +10,6 @@ import UIKit
 
 class ViewController: UITableViewController, DetailViewControllerDelegate {
 
-    let orange = UIColor(red: 232/255, green: 162/255, blue: 0, alpha: 1)
-    let bgColor = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1)
-    let bgColorTransparent = UIColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 0.5)
     var notes = [Note]()
 
     lazy var toolBarLabel: UILabel = {
@@ -39,23 +36,16 @@ class ViewController: UITableViewController, DetailViewControllerDelegate {
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let create = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(createNote))
         let label = UIBarButtonItem(customView: toolBarLabel)
-        create.tintColor = orange
+        create.tintColor = UIColor(named: "MyOrange")
         toolbarItems = [space, label, space, create]
         
         //set toolbar transpanrent
-        navigationController?.toolbar.barTintColor = bgColorTransparent
+        navigationController?.toolbar.barTintColor = UIColor(named: "BGColor")
         navigationController?.toolbar.setShadowImage(UIImage(), forToolbarPosition: .any)
 
-//        tableView.register(NoteCell.self, forCellReuseIdentifier: "noteCell") //what a problematic line
         self.loadNotes()
-        tableView.backgroundColor = bgColor
+        tableView.backgroundColor = UIColor(named: "BGColor")
         tableView.reloadData()
-//        DispatchQueue.global().async {
-//            self.loadNotes()
-//            DispatchQueue.main.async {
-//                self.tableView.reloadData()
-//            }
-//        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
