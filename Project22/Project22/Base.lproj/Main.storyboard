@@ -18,6 +18,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No visible beacons" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DmV-fQ-TuF" userLabel="No">
+                                <rect key="frame" x="125" y="181" width="164" height="24"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mcf-R5-27F">
+                                <rect key="frame" x="79" y="325" width="256" height="256"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="256" id="ENd-ui-5My"/>
+                                    <constraint firstAttribute="width" constant="256" id="pMu-ri-IBm"/>
+                                </constraints>
+                            </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UNKNOWN" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HtQ-En-Bba">
                                 <rect key="frame" x="111" y="429" width="192" height="48"/>
                                 <fontDescription key="fontDescription" type="system" weight="thin" pointSize="40"/>
@@ -28,16 +42,23 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="HtQ-En-Bba" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="Hxw-I1-EYk"/>
+                            <constraint firstItem="DmV-fQ-TuF" firstAttribute="bottom" secondItem="mcf-R5-27F" secondAttribute="top" constant="-120" id="Pfz-B8-545"/>
                             <constraint firstItem="HtQ-En-Bba" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="QH7-Bz-YiH"/>
+                            <constraint firstItem="mcf-R5-27F" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="ZwZ-1c-MZD"/>
+                            <constraint firstItem="mcf-R5-27F" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="eFX-j8-gyY"/>
+                            <constraint firstItem="DmV-fQ-TuF" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="rag-tu-0G3"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="beaconIDLabel" destination="DmV-fQ-TuF" id="ref-es-Aek"/>
+                        <outlet property="circleView" destination="mcf-R5-27F" id="QtG-th-Vqw"/>
                         <outlet property="distanceReading" destination="HtQ-En-Bba" id="2kM-vv-ZEL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="34.782608695652179" y="18.75"/>
         </scene>
     </scenes>
 </document>

@@ -11,8 +11,18 @@ import CoreLocation
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
 
+    @IBOutlet var beaconIDLabel: UILabel!
     @IBOutlet var distanceReading: UILabel!
+    @IBOutlet var circleView: UIView!
+
     var locationManager: CLLocationManager?
+    var isFirstBeaconDetected = false
+
+    let beacons: [(UUID, String, UInt16?, UInt16?)] = [    //(uuid, identifier, major, minor)
+        (UUID(uuidString: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5")!, "iPhone beacon", nil, nil),
+        (UUID(uuidString: "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0")!, "iPad beacon", nil, nil),
+        (UUID(uuidString: "74278BDA-B644-4520-8F0C-720EAF059935")!, "MacBook beacon", nil, nil)
+    ]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,7 +30,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         locationManager?.delegate = self
         locationManager?.requestAlwaysAuthorization()
         
-        view.backgroundColor = .gray
+        view.backgroundColor = .white
+        circleView.backgroundColor = .white
+        circleView.layer.cornerRadius = 128
+        
     }
 
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -35,40 +48,55 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         if let beacon = beacons.first {
+            if !isFirstBeaconDetected {
+                isFirstBeaconDetected = true
+                showFirstBeaconDetectAlert()
+            }
+            beaconIDLabel.text = region.identifier
+            print("Becon detected: \(beacon.proximityUUID.uuidString) -\(region.identifier)")
             update(distance: beacon.proximity)
-        } else {
-            update(distance: .unknown)
         }
     }
     
     func startScanning() {
-        let uuid = UUID(uuidString: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5")!
-        let beaconRegion = CLBeaconRegion(proximityUUID: uuid, major: 123, minor: 456, identifier: "MyBeacon")
-        
-        locationManager?.startMonitoring(for: beaconRegion)
-        locationManager?.startRangingBeacons(in: beaconRegion)
+        for (uuid, identifier, major, minor) in beacons {
+            print(identifier)
+            let beaconRegion = CLBeaconRegion(proximityUUID: uuid, major: major ?? 123, minor: minor ?? 456, identifier: identifier)
+            locationManager?.startMonitoring(for: beaconRegion)
+            locationManager?.startRangingBeacons(in: beaconRegion)
+        }
     }
     
     func update(distance: CLProximity) {
-        UIView.animate(withDuration: 1) {
-            switch distance {
-            case .far:
-                self.view.backgroundColor = UIColor.blue
-                self.distanceReading.text = "FAR"
-                
-            case .near:
-                self.view.backgroundColor = UIColor.orange
-                self.distanceReading.text = "NEAR"
-                
-            case .immediate:
-                self.view.backgroundColor = UIColor.red
-                self.distanceReading.text = "RIGHT HERE"
-
-            default:
-                self.view.backgroundColor = UIColor.gray
-                self.distanceReading.text = "UNKNOWN"
-            }
-        }
+        UIView.animate(withDuration: 1, animations: {
+                switch distance {
+                case .far:
+                    self.circleView.backgroundColor = UIColor.blue
+                    self.circleView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+                    self.distanceReading.text = "FAR"
+                    
+                case .near:
+                    self.circleView.backgroundColor = UIColor.orange
+                    self.circleView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+                    self.distanceReading.text = "NEAR"
+                    
+                case .immediate:
+                    self.circleView.backgroundColor = UIColor.red
+                    self.circleView.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
+                    self.distanceReading.text = "RIGHT HERE"
+                    
+                default:
+                    self.circleView.backgroundColor = UIColor.gray
+                    self.circleView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
+                    self.distanceReading.text = "UNKNOWN"
+                }
+        })
+    }
+    
+    func showFirstBeaconDetectAlert() {
+        let ac = UIAlertController(title: "Alert", message: "Beacon detected!", preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
     }
 }
 
