@@ -46,6 +46,29 @@ class GameScene: SKScene {
     var chainDelay = 3.0
     var nextSequenceQueued = true
     var isGameEnded = false
+    
+    var randomPositionX: Int {
+        return Int.random(in: 64...960)
+    }
+    
+    var enemyPositionX = 0
+    var randomXVelocity: Int {
+        if enemyPositionX  < 256 {
+            return Int.random(in: 8...15) * 40
+        } else if enemyPositionX  < 512 {
+            return Int.random(in: 3...5) * 40
+        } else if enemyPositionX  < 768 {
+            return -Int.random(in: 3...5) * 40
+        } else {
+            return -Int.random(in: 8...15) * 40
+        }
+    }
+    var randomYVelocity: Int {
+        return Int.random(in: 24...32) * 40
+    }
+    var randomAngularVelocity: CGFloat {
+        return CGFloat.random(in: -3...3 )
+    }
 
     override func didMove(to view: SKView) {
         let background = SKSpriteNode(imageNamed: "sliceBackground")
@@ -297,27 +320,11 @@ class GameScene: SKScene {
                 enemy.name = "fish"
             }
         }
-        
-        let randomPosition = CGPoint(x: Int.random(in: 64...960), y: -128)
-        enemy.position = randomPosition
-        
-        let randomAngularVelocity = CGFloat.random(in: -3...3 )
-        let randomXVelocity: Int
-        
-        if randomPosition.x < 256 {
-            randomXVelocity = Int.random(in: 8...15)
-        } else if randomPosition.x < 512 {
-            randomXVelocity = Int.random(in: 3...5)
-        } else if randomPosition.x < 768 {
-            randomXVelocity = -Int.random(in: 3...5)
-        } else {
-            randomXVelocity = -Int.random(in: 8...15)
-        }
 
-        let randomYVelocity = Int.random(in: 24...32)
-        
+        enemyPositionX = randomPositionX
+        enemy.position = CGPoint(x: enemyPositionX, y: 64)
         enemy.physicsBody = SKPhysicsBody(circleOfRadius: 64)
-        enemy.physicsBody?.velocity = CGVector(dx: randomXVelocity * 40, dy: randomYVelocity * 40)
+        enemy.physicsBody?.velocity = CGVector(dx: randomXVelocity, dy: randomYVelocity)
         enemy.physicsBody?.angularVelocity = randomAngularVelocity
         enemy.physicsBody?.collisionBitMask = 0
         
