@@ -130,12 +130,13 @@ class GameScene: SKScene {
         let nodesAtPoint = nodes(at: location)
         
         for case let node as SKSpriteNode in nodesAtPoint {
-            if node.name == "enemy" {
+            if node.name == "fish" || node.name == "penguin" {
                 if let emitter = SKEmitterNode(fileNamed: "sliceHitEnemy") {
                     emitter.position = node.position
                     addChild(emitter)
                 }
 
+                score += ( node.name == "fish" ? 10 : 1 )
                 node.name = ""
                 node.physicsBody?.isDynamic = false
 
@@ -145,8 +146,6 @@ class GameScene: SKScene {
 
                 let seq = SKAction.sequence([group, .removeFromParent()])
                 node.run(seq)
-
-                score += 1
 
                 if let index = activeEnemies.firstIndex(of: node) {
                     activeEnemies.remove(at: index)
@@ -262,23 +261,19 @@ class GameScene: SKScene {
         }
         
         if enemyType == 0 {
-            // 1
             enemy = SKSpriteNode()
             enemy.zPosition = 1
             enemy.name = "bombContainer"
             
-            // 2
             let bombImage = SKSpriteNode(imageNamed: "sliceBomb")
             bombImage.name = "bomb"
             enemy.addChild(bombImage)
             
-            // 3
             if bombSoundEffect != nil {
                 bombSoundEffect?.stop()
                 bombSoundEffect = nil
             }
             
-            // 4
             if let path = Bundle.main.url(forResource: "sliceBombFuse", withExtension: "caf") {
                 if let sound = try?  AVAudioPlayer(contentsOf: path) {
                     bombSoundEffect = sound
@@ -286,7 +281,6 @@ class GameScene: SKScene {
                 }
             }
             
-            // 5
             if let emitter = SKEmitterNode(fileNamed: "sliceFuse") {
                 emitter.position = CGPoint(x: 76, y: 64)
                 enemy.addChild(emitter)
@@ -296,23 +290,20 @@ class GameScene: SKScene {
             if isPenguin {
                 enemy = SKSpriteNode(imageNamed: "penguin")
                 run(SKAction.playSoundFileNamed("launch.caf", waitForCompletion: false))
-                enemy.name = "enemy"
+                enemy.name = "penguin"
             } else {
                 enemy = SKSpriteNode(imageNamed: "fish")
                 run(SKAction.playSoundFileNamed("launch.caf", waitForCompletion: false))
-                enemy.name = "enemy"
+                enemy.name = "fish"
             }
         }
         
-        // 1
         let randomPosition = CGPoint(x: Int.random(in: 64...960), y: -128)
         enemy.position = randomPosition
         
-        // 2
         let randomAngularVelocity = CGFloat.random(in: -3...3 )
         let randomXVelocity: Int
         
-        // 3
         if randomPosition.x < 256 {
             randomXVelocity = Int.random(in: 8...15)
         } else if randomPosition.x < 512 {
@@ -336,15 +327,10 @@ class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         if activeEnemies.count > 0 {
-            if isGameEnded {
-                activeEnemies.removeAll()
-                return
-            }
-
             for (index, node) in activeEnemies.enumerated().reversed() {
                 if node.position.y < -140 {
                     node.removeAllActions()
-                    if node.name == "enemy" {
+                    if node.name == "fish" || node.name == "penguin" {
                         node.name = ""
                         subtractLife()
                         node.removeFromParent()
@@ -494,6 +480,7 @@ class GameScene: SKScene {
             livesImages[2].texture = SKTexture(imageNamed: "sliceLifeGone")
         }
 
+        activeEnemies.forEach{ $0.removeFromParent() }
         gameoverLabel = SKLabelNode(fontNamed: "Verdana-Bold")
         gameoverLabel.fontColor = .white
         gameoverLabel.fontSize = 90
