@@ -21,6 +21,8 @@ enum SequenceType: CaseIterable {
 class GameScene: SKScene {
     
     var gameScore: SKLabelNode!
+    var gameoverLabel: SKLabelNode!
+    var restartLabel: SKLabelNode!
     var score = 0 {
         didSet {
             gameScore.text = "Score: \(score)"
@@ -58,17 +60,20 @@ class GameScene: SKScene {
         createScore()
         createLives()
         createSlices()
-        
+        createGameSequence()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            self?.tossEnemies()
+        }
+    }
+    
+    func createGameSequence() {
         sequence = [.oneNoBomb, .oneNoBomb, .twoWithOneBomb, .twoWithOneBomb, .three, .one, .chain]
         
         for _ in 0 ... 1000 {
             if let nextSequence = SequenceType.allCases.randomElement() {
                 sequence.append(nextSequence)
             }
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-            self?.tossEnemies()
         }
     }
     
@@ -187,6 +192,18 @@ class GameScene: SKScene {
         activeSlicePoints.removeAll()
         
         let location = touch.location(in: self)
+
+        if isGameEnded {
+            //restart game
+            let nodesAtPoint = nodes(at: location)
+            if nodesAtPoint.contains(restartLabel) {
+                let sequence = SKAction.sequence([SKAction.fadeOut(withDuration: 0.25), .removeFromParent()])
+                gameoverLabel.run(sequence)
+                restartLabel.run(sequence)
+                restartGame()
+            }
+            return
+        }
         activeSlicePoints.append(location)
         
         redrawActiveSlice()
@@ -275,9 +292,16 @@ class GameScene: SKScene {
                 enemy.addChild(emitter)
             }
         } else {
-            enemy = SKSpriteNode(imageNamed: "penguin")
-            run(SKAction.playSoundFileNamed("launch.caf", waitForCompletion: false))
-            enemy.name = "enemy"
+            let isPenguin = Bool.random()
+            if isPenguin {
+                enemy = SKSpriteNode(imageNamed: "penguin")
+                run(SKAction.playSoundFileNamed("launch.caf", waitForCompletion: false))
+                enemy.name = "enemy"
+            } else {
+                enemy = SKSpriteNode(imageNamed: "fish")
+                run(SKAction.playSoundFileNamed("launch.caf", waitForCompletion: false))
+                enemy.name = "enemy"
+            }
         }
         
         // 1
@@ -312,22 +336,23 @@ class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         if activeEnemies.count > 0 {
+            if isGameEnded {
+                activeEnemies.removeAll()
+                return
+            }
+
             for (index, node) in activeEnemies.enumerated().reversed() {
                 if node.position.y < -140 {
-                    if node.position.y < -140 {
-                        node.removeAllActions()
-                        
-                        if node.name == "enemy" {
-                            node.name = ""
-                            subtractLife()
-                            
-                            node.removeFromParent()
-                            activeEnemies.remove(at: index)
-                        } else if node.name == "bombContainer" {
-                            node.name = ""
-                            node.removeFromParent()
-                            activeEnemies.remove(at: index)
-                        }
+                    node.removeAllActions()
+                    if node.name == "enemy" {
+                        node.name = ""
+                        subtractLife()
+                        node.removeFromParent()
+                        activeEnemies.remove(at: index)
+                    } else if node.name == "bombContainer" {
+                        node.name = ""
+                        node.removeFromParent()
+                        activeEnemies.remove(at: index)
                     }
                 }
             }
@@ -458,7 +483,7 @@ class GameScene: SKScene {
         
         isGameEnded = true
         physicsWorld.speed = 0
-        isUserInteractionEnabled = false
+//        isUserInteractionEnabled = false
         
         bombSoundEffect?.stop()
         bombSoundEffect = nil
@@ -467,6 +492,45 @@ class GameScene: SKScene {
             livesImages[0].texture = SKTexture(imageNamed: "sliceLifeGone")
             livesImages[1].texture = SKTexture(imageNamed: "sliceLifeGone")
             livesImages[2].texture = SKTexture(imageNamed: "sliceLifeGone")
+        }
+
+        gameoverLabel = SKLabelNode(fontNamed: "Verdana-Bold")
+        gameoverLabel.fontColor = .white
+        gameoverLabel.fontSize = 90
+        gameoverLabel.position = CGPoint(x: 512, y: 384)
+        gameoverLabel.text = "GAME OVER"
+        addChild(gameoverLabel)
+        
+        restartLabel = SKLabelNode(fontNamed: "Verdana")
+        restartLabel.fontColor = .yellow
+        restartLabel.fontSize = 35
+        restartLabel.position = CGPoint(x: 512, y: 290)
+        restartLabel.text = "Try Again"
+        addChild(restartLabel)
+        
+        let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+        let blinkSequence = SKAction.sequence([fadeIn, fadeOut])
+        let blink = SKAction.repeatForever(blinkSequence)
+        restartLabel.run(blink)
+    }
+    
+    func restartGame() {
+        isGameEnded = false
+        sequencePosition = 0
+        nextSequenceQueued = true
+        createGameSequence()
+        activeEnemies.removeAll()
+        score = 0
+        lives = 3
+        physicsWorld.speed = 0.85
+        
+//        isUserInteractionEnabled = true
+        livesImages[0].texture = SKTexture(imageNamed: "sliceLife")
+        livesImages[1].texture = SKTexture(imageNamed: "sliceLife")
+        livesImages[2].texture = SKTexture(imageNamed: "sliceLife")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            self?.tossEnemies()
         }
     }
 }
