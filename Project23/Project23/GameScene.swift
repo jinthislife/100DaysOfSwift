@@ -324,8 +324,14 @@ class GameScene: SKScene {
         enemyPositionX = randomPositionX
         enemy.position = CGPoint(x: enemyPositionX, y: 64)
         enemy.physicsBody = SKPhysicsBody(circleOfRadius: 64)
-        enemy.physicsBody?.velocity = CGVector(dx: randomXVelocity, dy: randomYVelocity)
-        enemy.physicsBody?.angularVelocity = randomAngularVelocity
+        if enemy.name == "fish" {
+            enemy.physicsBody?.velocity = CGVector(dx: Double(randomXVelocity) * 2.0, dy: Double(randomYVelocity))
+            enemy.physicsBody?.angularVelocity = randomAngularVelocity * 1.2
+        } else {
+            enemy.physicsBody?.velocity = CGVector(dx: randomXVelocity, dy: randomYVelocity)
+            enemy.physicsBody?.angularVelocity = randomAngularVelocity
+        }
+        
         enemy.physicsBody?.collisionBitMask = 0
         
         addChild(enemy)
