@@ -22,6 +22,12 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         title = "Selfie Share"
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showConnectionPrompt))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(importPicture))
+
+        navigationController?.isToolbarHidden = false
+        let photo = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(importPicture))
+        let text = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(popupTextEdit))
+        let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+        toolbarItems = [photo, space, text]
         
         mcSession = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: .required)
         mcSession?.delegate = self
@@ -45,6 +51,9 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         picker.allowsEditing = true
         picker.delegate = self
         present(picker, animated: true)
+    }
+    
+    @objc func popupTextEdit() {
     }
     
     @objc func showConnectionPrompt() {
@@ -118,6 +127,8 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             print("Connecting: \(peerID.displayName)")
         case .notConnected:
             print("notConnected: \(peerID.displayName)")
+            print("mainthread = \(Thread.isMainThread)")
+            showPeerDisconnectedAlert(displayName: peerID.displayName)
         @unknown default:
             print("Unknown status received: \(peerID.displayName)")
         }
@@ -128,7 +139,46 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             if let image = UIImage(data: data) {
                 self?.images.insert(image, at: 0)
                 self?.collectionView.reloadData()
+                self?.showImageReceiveCompletionAlert()
+            } else {
+                self?.showTextReceiveCompletionAlert(text: String(decoding: data, as: UTF8.self), from: peerID.displayName)
             }
+        }
+    }
+    
+    func showImageReceiveCompletionAlert() {
+        let ac = UIAlertController(title: "Image has been received!", message: "Do you want to disconnect session?", preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "Disconnect", style: .default, handler: disConnectSession))
+        ac.addAction(UIAlertAction(title: "No", style: .default))
+        present(ac, animated: true)
+    }
+    
+    func showTextReceiveCompletionAlert(text: String, from peer: String) {
+        let ac = UIAlertController(title: "Message from \(peer)", message: "\(text)", preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
+    }
+    
+    func showPeerDisconnectedAlert(displayName: String) {
+        let ac = UIAlertController(title: "Alert", message: "\(displayName) is disconnected", preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
+    }
+    
+    func disConnectSession(action: UIAlertAction) {
+        mcSession?.disconnect()
+    }
+    
+    func sendText(message: String) {
+        guard let mcSession = mcSession else { return }
+        
+        let stringData = Data(message.utf8)
+        do {
+            try mcSession.send(stringData, toPeers: mcSession.connectedPeers, with: .reliable)
+        } catch {
+            let ac = UIAlertController(title: "Send error", message: error.localizedDescription, preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default))
+            present(ac, animated: true)
         }
     }
 }
