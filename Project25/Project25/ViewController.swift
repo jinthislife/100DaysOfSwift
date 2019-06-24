@@ -21,13 +21,13 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         
         title = "Selfie Share"
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showConnectionPrompt))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(importPicture))
 
         navigationController?.isToolbarHidden = false
         let photo = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(importPicture))
         let text = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(popupTextEdit))
-        let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        toolbarItems = [photo, space, text]
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let peerList = UIBarButtonItem(title: "Connected peers", style: .plain, target: self, action: #selector(showConnectedPeerlist))
+        toolbarItems = [photo, text, space, peerList]
         
         mcSession = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: .required)
         mcSession?.delegate = self
@@ -46,6 +46,20 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         return cell
     }
     
+    @objc func showConnectedPeerlist() {
+        guard let connectedPeers = mcSession?.connectedPeers else { return }
+        var message = ""
+        if connectedPeers.isEmpty {
+           message = "Currently there are no peers connected"
+        }
+        let ac = UIAlertController(title: "Connected peers", message: message, preferredStyle: .alert)
+        for peerID in connectedPeers {
+            ac.addAction(UIAlertAction(title: "\(peerID)", style: .default))
+        }
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
+    }
+    
     @objc func importPicture() {
         let picker = UIImagePickerController()
         picker.allowsEditing = true
@@ -54,6 +68,15 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     }
     
     @objc func popupTextEdit() {
+        let ac = UIAlertController(title: "Send message", message: nil, preferredStyle: .alert)
+        ac.addTextField()
+        ac.addAction(UIAlertAction(title: "Send", style: .default) { [weak self, weak ac] _ in
+            if let message = ac?.textFields?.first?.text {
+                self?.sendText(message: message)
+            }
+        })
+        ac.addAction(UIAlertAction(title: "Cancel", style: .default))
+        present(ac, animated: true)
     }
     
     @objc func showConnectionPrompt() {
