@@ -16,6 +16,7 @@ enum CollisionTypes: UInt32 {
     case star = 4
     case vortex = 8
     case finish = 16
+    case transport = 32
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
@@ -30,8 +31,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     var isGameOver = false
+    var gameLevel = 1
+    var transportPoints = [SKSpriteNode]()
 
     override func didMove(to view: SKView) {
+        physicsWorld.gravity = .zero
+        physicsWorld.contactDelegate = self
+        
+        motionManager = CMMotionManager()
+        motionManager.startAccelerometerUpdates()
+   
+        loadLevel()
+    }
+    
+    func createPlayer() {
+        player = SKSpriteNode(imageNamed: "player")
+        if gameLevel == 1 {
+            player.position = CGPoint(x: 96, y: 96)
+        } else {
+            player.position = CGPoint(x: 96, y: 672)
+        }
+        player.zPosition = 1
+        player.physicsBody = SKPhysicsBody(circleOfRadius: player.size.width / 2)
+        player.physicsBody?.allowsRotation = false
+        player.physicsBody?.linearDamping = 0.5
+        
+        player.physicsBody?.categoryBitMask = CollisionTypes.player.rawValue
+        player.physicsBody?.contactTestBitMask = CollisionTypes.star.rawValue | CollisionTypes.vortex.rawValue | CollisionTypes.finish.rawValue
+        player.physicsBody?.collisionBitMask = CollisionTypes.wall.rawValue
+        addChild(player)
+    }
+    
+    func loadLevel() {
+        guard let levelUrl = Bundle.main.url(forResource: "level\(gameLevel)", withExtension: "txt") else {
+            fatalError("Could not find level\(gameLevel).txt from the app bundle.")
+        }
+        guard let levelString = try? String(contentsOf: levelUrl) else {
+            fatalError("Could not load level\(gameLevel).txt from the app bundle.")
+        }
+        
         let background = SKSpriteNode(imageNamed: "background.jpg")
         background.position = CGPoint(x: 512, y: 384)
         background.blendMode = .replace
@@ -45,37 +83,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel.zPosition = 2
         addChild(scoreLabel)
         
-        loadLevel()
         createPlayer()
-        
-        physicsWorld.gravity = .zero
-        physicsWorld.contactDelegate = self
-        
-        motionManager = CMMotionManager()
-        motionManager.startAccelerometerUpdates()
-    }
-    
-    func createPlayer() {
-        player = SKSpriteNode(imageNamed: "player")
-        player.position = CGPoint(x: 96, y: 672)
-        player.zPosition = 1
-        player.physicsBody = SKPhysicsBody(circleOfRadius: player.size.width / 2)
-        player.physicsBody?.allowsRotation = false
-        player.physicsBody?.linearDamping = 0.5
-        
-        player.physicsBody?.categoryBitMask = CollisionTypes.player.rawValue
-        player.physicsBody?.contactTestBitMask = CollisionTypes.star.rawValue | CollisionTypes.vortex.rawValue | CollisionTypes.finish.rawValue
-        player.physicsBody?.collisionBitMask = CollisionTypes.wall.rawValue
-        addChild(player)
-    }
-    
-    func loadLevel() {
-        guard let levelUrl = Bundle.main.url(forResource: "level1", withExtension: "txt") else {
-            fatalError("Could not find level1.txt from the app bundle.")
-        }
-        guard let levelString = try? String(contentsOf: levelUrl) else {
-            fatalError("Could not load level1.txt from the app bundle.")
-        }
         
         let lines = levelString.components(separatedBy: "\n")
         for (row, line) in lines.reversed().enumerated() {
@@ -126,6 +134,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     node.physicsBody?.categoryBitMask = CollisionTypes.finish.rawValue
                     node.physicsBody?.contactTestBitMask = CollisionTypes.player.rawValue
                     node.physicsBody?.collisionBitMask = 0
+                    addChild(node)
+                } else if letter == "t" {
+                    let node = SKSpriteNode(imageNamed: "transport")
+                    node.name = "transport"
+                    node.position = position
+                    node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width/4)
+                    node.physicsBody?.isDynamic = false
+                    node.physicsBody?.categoryBitMask = CollisionTypes.transport.rawValue
+                    node.physicsBody?.contactTestBitMask = CollisionTypes.player.rawValue
+                    node.physicsBody?.collisionBitMask = 0
+                    transportPoints.append(node)
                     addChild(node)
                 } else if letter == " " {
                     // do nothing
@@ -195,8 +214,43 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         } else if node.name == "star" {
             node.removeFromParent()
             score += 1
+        } else if node.name == "transport" {
+            let filteredArray = transportPoints.filter{ $0 !== node }
+            let anotherTransportPoint = filteredArray.randomElement()
+            player.physicsBody?.isDynamic = false
+            player.run(SKAction.scale(to: 0.0001, duration: 0.5)) { [weak anotherTransportPoint, weak self] in
+                let transportPoint = CGPoint(x: anotherTransportPoint?.position.x ?? 96, y: (anotherTransportPoint?.position.y ?? 96) - 64)
+                self?.player.position = transportPoint
+                self?.player.run(SKAction.scale(to: 1, duration: 0.5))
+                self?.player.physicsBody?.isDynamic = true
+            }
         } else if node.name == "finish" {
             //next level
+            node.run(SKAction.scale(to: 0.0001, duration: 0.5)) { [weak self, weak node] in
+                node?.removeFromParent()
+                self?.displayGameClearMessage()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    self?.removeAllChildren()
+                    self?.loadLevel()
+                }
+            }
         }
+    }
+    
+    func displayGameClearMessage() {
+        let labelBackgroundNode = SKSpriteNode(color: .black, size: CGSize(width: 1024, height: 150))
+        labelBackgroundNode.position = CGPoint(x: 512, y: 384)
+        labelBackgroundNode.zPosition = 2
+        
+        let gameClearedLabel = SKLabelNode(fontNamed: "Verdana-Bold") // 1. font
+        gameClearedLabel.fontSize = 90
+        gameClearedLabel.text = "Level\(gameLevel)  Cleared"
+        gameClearedLabel.horizontalAlignmentMode = .center
+        gameClearedLabel.position = CGPoint(x: 0, y: -30)
+        gameClearedLabel.zPosition = 3
+        labelBackgroundNode.addChild(gameClearedLabel)
+
+        addChild(labelBackgroundNode)
+        gameLevel += 1
     }
 }

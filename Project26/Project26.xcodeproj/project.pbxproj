@@ -15,6 +15,7 @@
 		78A74C4722C19A7500C3F55B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 78A74C4622C19A7500C3F55B /* Assets.xcassets */; };
 		78A74C4A22C19A7500C3F55B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 78A74C4822C19A7500C3F55B /* LaunchScreen.storyboard */; };
 		78A74C5222C19CC700C3F55B /* level1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 78A74C5122C19CC700C3F55B /* level1.txt */; };
+		78A74C5422C24C5C00C3F55B /* level2.txt in Resources */ = {isa = PBXBuildFile; fileRef = 78A74C5322C24C5C00C3F55B /* level2.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		78A74C4922C19A7500C3F55B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		78A74C4B22C19A7500C3F55B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		78A74C5122C19CC700C3F55B /* level1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = level1.txt; sourceTree = "<group>"; };
+		78A74C5322C24C5C00C3F55B /* level2.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = level2.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 				78A74C4322C19A7000C3F55B /* Main.storyboard */,
 				78A74C4622C19A7500C3F55B /* Assets.xcassets */,
 				78A74C5122C19CC700C3F55B /* level1.txt */,
+				78A74C5322C24C5C00C3F55B /* level2.txt */,
 				78A74C4822C19A7500C3F55B /* LaunchScreen.storyboard */,
 				78A74C4B22C19A7500C3F55B /* Info.plist */,
 			);
@@ -133,6 +136,7 @@
 			files = (
 				78A74C5222C19CC700C3F55B /* level1.txt in Resources */,
 				78A74C4522C19A7000C3F55B /* Main.storyboard in Resources */,
+				78A74C5422C24C5C00C3F55B /* level2.txt in Resources */,
 				78A74C3C22C19A7000C3F55B /* GameScene.sks in Resources */,
 				78A74C4722C19A7500C3F55B /* Assets.xcassets in Resources */,
 				78A74C4A22C19A7500C3F55B /* LaunchScreen.storyboard in Resources */,
