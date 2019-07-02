@@ -18,15 +18,10 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showActionSheet))
 
         let defaults = UserDefaults.standard
-        
+
         if let savedPeople = defaults.object(forKey: "people") as? Data {
             if let decodedPeople = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(savedPeople) as? [Person] {
                 people = decodedPeople
-            }
-        }
-        if let savedPeople = defaults.object(forKey: "people") as? Data {
-            if let decodedPeople = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(savedPeople) as? [Person] {
-                people = decodedPeople ?? [Person]()
             }
         }
     }
