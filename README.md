@@ -83,5 +83,5 @@ Core Motion, CMMotionManager, accelerometer, gyroscope, fatalError, SpriteKit, c
 ## Project27 - Core Graphics
 Sandbox test, Core Graphics, UIGraphicsImageRenderer, drawing fills and strokes, ellipses and checkerboards, transforms and lines, images and text, NSAttributedString
 
-## Project28 - 
+## Project28 - Secret Swift
 Local Authentication Framework, Face ID, Touch ID, IOS Keychain
