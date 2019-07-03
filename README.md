@@ -1,17 +1,17 @@
 # 100DaysOfSwift
 
-## Project1 - StormViewer
+## Project 1 - StormViewer
 Load photos from Bundle Using FileManager and list them using TableView
 
 hidesBarOnTap and large titles
 
-## Project2 - Guess the Flag
+## Project 2 - Guess the Flag
 UIButton, CALayer, UIAlertController, random number generation
 
-## Project3 - Social Media
+## Project 3 - Social Media
 Sharing images using UIActivityViewController
 
-## Project4 - Easy Browser
+## Project 4 - Easy Browser
 WebKit, WKWebView, WKNavigationDelegate, KVO - #keyPath(WKWebView.estimatedProgress), URL, URLRequest, @escaping closure, UIProgressView, UIToolBar, UIAlertController .actionSheet type,
 
 ## Project5 - Word Scramble
