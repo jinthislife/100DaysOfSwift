@@ -26,6 +26,8 @@ class GameViewController: UIViewController {
     @IBOutlet var launchButton: UIButton!
     @IBOutlet var playerNumber: UILabel!
     @IBOutlet var windSpeed: UILabel!
+    @IBOutlet var score1: UILabel!
+    @IBOutlet var score2: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,7 +81,7 @@ class GameViewController: UIViewController {
     }
     
     func changeWindSpeed() {
-        let wind = CGFloat.random(in: -30...30).rounded(digits: 2)
+        let wind = CGFloat.random(in: -20...20).rounded(digits: 2)
         windSpeed.text = wind > 0 ? "East: Speed \(abs(wind))" : "West: Speed \(abs(wind)) spd"
         currentGame.setWindSpeed(wind)
     }

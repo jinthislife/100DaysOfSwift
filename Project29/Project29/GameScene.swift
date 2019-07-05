@@ -22,6 +22,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var player2: SKSpriteNode!
     var banana: SKSpriteNode!
     var snow: SKEmitterNode!
+    var player1Score = 0 {
+        didSet {
+            viewController.score1.text = "Player1: \(player1Score)"
+        }
+    }
+    var player2Score = 0 {
+        didSet {
+            viewController.score2.text = "Player2: \(player2Score)"
+        }
+    }
     
     var currentPlayer = 1
 
@@ -168,6 +178,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.removeFromParent()
         banana.removeFromParent()
         
+        transitToNewGame()
+    }
+    
+    func transitToNewGame() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             let newGame = GameScene(size: self.size)
             newGame.viewController = self.viewController
@@ -192,6 +206,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func setWindSpeed(_ speed: CGFloat) {
+        guard let snow = snow else { return }
         physicsWorld.gravity = CGVector(dx: speed, dy: 9.8)
         snow.xAcceleration = speed
     }
@@ -206,10 +221,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             addChild(explosion)
         }
         
+        if currentPlayer == 1 {
+            player1Score += 1
+        } else {
+            player2Score += 1
+        }
+        
         banana.name = ""
         banana.removeFromParent()
         banana = nil
         
+        if player1Score > 2 || player2Score > 2 {
+            transitToNewGame()
+            return
+        }
         changePlayer()
     }
     
