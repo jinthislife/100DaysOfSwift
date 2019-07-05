@@ -18,7 +18,12 @@ extension CGFloat {
 }
 
 class GameViewController: UIViewController {
-    var currentGame: GameScene!
+    var currentGame: GameScene! {
+        didSet {
+            score1.text = "Player1: 0"
+            score2.text = "Player2: 0"
+        }
+    }
     @IBOutlet var angleSlider: UISlider!
     @IBOutlet var angleLabel: UILabel!
     @IBOutlet var velocitySlider: UISlider!
@@ -82,7 +87,7 @@ class GameViewController: UIViewController {
     
     func changeWindSpeed() {
         let wind = CGFloat.random(in: -20...20).rounded(digits: 2)
-        windSpeed.text = wind > 0 ? "East: Speed \(abs(wind))" : "West: Speed \(abs(wind))"
+        windSpeed.text = wind > 0 ? "Wind Speed: East \(abs(wind))" : "Wind Speed: West \(abs(wind))"
         currentGame.setWindSpeed(wind)
     }
 

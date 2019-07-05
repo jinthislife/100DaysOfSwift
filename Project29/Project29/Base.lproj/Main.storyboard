@@ -94,6 +94,8 @@
                         <outlet property="angleSlider" destination="ovz-BD-ina" id="Baq-Hb-yuO"/>
                         <outlet property="launchButton" destination="A9W-rn-Ux6" id="WyL-28-ABx"/>
                         <outlet property="playerNumber" destination="eZH-rJ-mrB" id="jOE-2n-J8N"/>
+                        <outlet property="score1" destination="lNu-Dp-skX" id="XAZ-g0-5FS"/>
+                        <outlet property="score2" destination="sQD-LJ-aP5" id="bCV-HA-F0C"/>
                         <outlet property="velocityLabel" destination="uXY-lA-T2c" id="hxd-mC-OuU"/>
                         <outlet property="velocitySlider" destination="G2w-Ic-cok" id="Dhw-64-wfg"/>
                         <outlet property="windSpeed" destination="gmr-Dn-85d" id="RU1-WU-Vqp"/>
