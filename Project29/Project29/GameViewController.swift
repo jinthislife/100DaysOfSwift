@@ -10,6 +10,13 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
+extension CGFloat {
+    func rounded(digits: Int) -> CGFloat {
+        let multiplier = pow(10.0, CGFloat(digits))
+        return (self * multiplier).rounded() / multiplier
+    }
+}
+
 class GameViewController: UIViewController {
     var currentGame: GameScene!
     @IBOutlet var angleSlider: UISlider!
@@ -18,6 +25,7 @@ class GameViewController: UIViewController {
     @IBOutlet var velocityLabel: UILabel!
     @IBOutlet var launchButton: UIButton!
     @IBOutlet var playerNumber: UILabel!
+    @IBOutlet var windSpeed: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,6 +44,7 @@ class GameViewController: UIViewController {
                 
                 currentGame = scene as? GameScene
                 currentGame.viewController = self
+                changeWindSpeed()
             }
             
             view.ignoresSiblingOrder = true
@@ -68,6 +77,12 @@ class GameViewController: UIViewController {
     @IBAction func velocityChanged(_ sender: Any) {
         velocityLabel.text = "Velocity: \(Int(velocitySlider.value))"
     }
+    
+    func changeWindSpeed() {
+        let wind = CGFloat.random(in: -30...30).rounded(digits: 2)
+        windSpeed.text = wind > 0 ? "East: Speed \(abs(wind))" : "West: Speed \(abs(wind)) spd"
+        currentGame.setWindSpeed(wind)
+    }
 
     @IBAction func launch(_ sender: Any) {
         angleSlider.isHidden = true
@@ -87,7 +102,8 @@ class GameViewController: UIViewController {
         } else {
             playerNumber.text = "PLAYER TWO >>>"
         }
-        
+
+        changeWindSpeed()
         angleSlider.isHidden = false
         angleLabel.isHidden = false
         

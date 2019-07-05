@@ -21,6 +21,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var player1: SKSpriteNode!
     var player2: SKSpriteNode!
     var banana: SKSpriteNode!
+    var snow: SKEmitterNode!
     
     var currentPlayer = 1
 
@@ -28,7 +29,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         backgroundColor = UIColor(hue: 0.669, saturation: 0.99, brightness: 0.67, alpha: 1)
         
         physicsWorld.contactDelegate = self
-
+        
+        snow = SKEmitterNode(fileNamed: "Snow")!
+        snow.position = CGPoint(x: 512, y: 800)
+        addChild(snow)
+        snow.zPosition = -1
+        
         createBuildings()
         createPlayers()
     }
@@ -185,6 +191,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         viewController.activatePlayer(number: currentPlayer)
     }
     
+    func setWindSpeed(_ speed: CGFloat) {
+        physicsWorld.gravity = CGVector(dx: speed, dy: 9.8)
+        snow.xAcceleration = speed
+    }
+
     func bananaHit(building: SKNode, atPoint contactPoint: CGPoint) {
         guard let building = building as? BuildingNode else { return }
         let buildingLocation = convert(contactPoint, to: building)
