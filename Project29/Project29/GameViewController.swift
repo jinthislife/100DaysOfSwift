@@ -82,7 +82,7 @@ class GameViewController: UIViewController {
     
     func changeWindSpeed() {
         let wind = CGFloat.random(in: -20...20).rounded(digits: 2)
-        windSpeed.text = wind > 0 ? "East: Speed \(abs(wind))" : "West: Speed \(abs(wind)) spd"
+        windSpeed.text = wind > 0 ? "East: Speed \(abs(wind))" : "West: Speed \(abs(wind))"
         currentGame.setWindSpeed(wind)
     }
 
