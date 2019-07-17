@@ -85,3 +85,6 @@ Sandbox test, Core Graphics, UIGraphicsImageRenderer, drawing fills and strokes,
 
 ## Project 28 - Secret Swift
 Local Authentication Framework, Face ID, Touch ID, IOS Keychain
+
+## Project 29 - Exploding Monkeys
+Core Graphics, SpriteKit scene transition, texture atlases
