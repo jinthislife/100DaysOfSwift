@@ -9,6 +9,7 @@
 import UIKit
 
 class SelectionViewController: UITableViewController {
+    var dataImages = [UIImage]()
 	var items = [String]() // this is the array that will store the filenames to load
 	var dirty = false
 
@@ -31,6 +32,27 @@ class SelectionViewController: UITableViewController {
 				}
 			}
 		}
+        renderImages()
+    }
+    
+    func renderImages() {
+        for item in items {
+            let imageRootName = item.replacingOccurrences(of: "Large", with: "Thumb")
+            let path = Bundle.main.path(forResource: imageRootName, ofType: nil)!
+            let original = UIImage(contentsOfFile: path)!
+            
+            let renderRect = CGRect(origin: .zero, size: CGSize(width: 90, height: 90))
+            let renderer = UIGraphicsImageRenderer(size: renderRect.size)
+            
+            let rounded = renderer.image { ctx in
+                ctx.cgContext.addEllipse(in: renderRect)
+                ctx.cgContext.clip()
+                
+                original.draw(in: renderRect)
+            }
+
+            dataImages.append(rounded)
+        }
     }
 
 	override func viewWillAppear(_ animated: Bool) {
@@ -57,24 +79,10 @@ class SelectionViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-//        let cell = UITableViewCell(style: .default, reuseIdentifier: "Cell")
-
-		// find the image for this cell, and load its thumbnail
-		let currentImage = items[indexPath.row % items.count]
-		let imageRootName = currentImage.replacingOccurrences(of: "Large", with: "Thumb")
-		let path = Bundle.main.path(forResource: imageRootName, ofType: nil)!
-		let original = UIImage(contentsOfFile: path)!
 
         let renderRect = CGRect(origin: .zero, size: CGSize(width: 90, height: 90))
-		let renderer = UIGraphicsImageRenderer(size: renderRect.size)
-        
-		let rounded = renderer.image { ctx in
-			ctx.cgContext.addEllipse(in: renderRect)
-			ctx.cgContext.clip()
-
-            original.draw(in: renderRect)
-		}
-
+        let rounded = dataImages[indexPath.row % items.count]
+        let imageName = items[indexPath.row % items.count]
 		cell.imageView?.image = rounded
 
 		// give the images a nice shadow to make them look a bit more dramatic
@@ -86,7 +94,7 @@ class SelectionViewController: UITableViewController {
 
 		// each image stores how often it's been tapped
 		let defaults = UserDefaults.standard
-		cell.textLabel?.text = "\(defaults.integer(forKey: currentImage))"
+		cell.textLabel?.text = "\(defaults.integer(forKey: imageName))"
 
 		return cell
     }
