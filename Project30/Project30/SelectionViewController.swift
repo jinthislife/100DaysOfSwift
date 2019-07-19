@@ -21,19 +21,35 @@ class SelectionViewController: UITableViewController {
 		tableView.rowHeight = 90
 		tableView.separatorStyle = .none
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-
+        
 		// load all the JPEGs into our array
-		let fm = FileManager.default
+        let fm = FileManager.default
 
-		if let tempItems = try? fm.contentsOfDirectory(atPath: Bundle.main.resourcePath!) {
-			for item in tempItems {
-				if item.range(of: "Large") != nil {
-					items.append(item)
-				}
-			}
-		}
-        renderImages()
+        if let tempItems = try? fm.contentsOfDirectory(atPath: Bundle.main.resourcePath!) {
+            for item in tempItems {
+                if item.range(of: "Large") != nil {
+                    items.append(item)
+                }
+            }
+        }
+
+        loadImages()
+
+        if dataImages.count == 0 {
+            renderImages()
+        }
     }
+    
+    func loadImages() {
+        for item in items {
+            let path = getDocumentsDirectory().appendingPathComponent(item)
+
+            if let image = UIImage(contentsOfFile: path.path) {
+                dataImages.append(image)
+            }
+        }
+    }
+
     
     func renderImages() {
         for item in items {
@@ -45,14 +61,26 @@ class SelectionViewController: UITableViewController {
             let renderer = UIGraphicsImageRenderer(size: renderRect.size)
             
             let rounded = renderer.image { ctx in
+//                ctx.fill(renderRect, blendMode: .clear)
                 ctx.cgContext.addEllipse(in: renderRect)
                 ctx.cgContext.clip()
                 
                 original.draw(in: renderRect)
             }
+            
+            let url = getDocumentsDirectory().appendingPathComponent(item)
 
+            if let data = rounded.pngData() {
+                try? data.write(to: url)
+            }
+        
             dataImages.append(rounded)
         }
+    }
+    
+    func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
     }
 
 	override func viewWillAppear(_ animated: Bool) {
