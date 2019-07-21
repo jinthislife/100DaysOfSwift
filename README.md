@@ -88,3 +88,6 @@ Local Authentication Framework, Face ID, Touch ID, IOS Keychain
 
 ## Project 29 - Exploding Monkeys
 Core Graphics, SpriteKit scene transition, texture atlases
+
+## Project 30 - Instruments
+Time Profiler, Allocation instruments, drawing shadows in both Core Graphics and CALayer
