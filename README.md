@@ -1,5 +1,11 @@
 # 100DaysOfSwift
 
+Projects created during Paul Hudson's 100DaysOfSwift course. This video demos Day 99's challenges I finished.
+
+<p align="center">
+<img src="images/Day99.gif" width="500"  title="Vocab Quiz">
+</p>
+
 ## Project 1 - StormViewer
 Load photos from Bundle Using FileManager and list them using TableView
 
